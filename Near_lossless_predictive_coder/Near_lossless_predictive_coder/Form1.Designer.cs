@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.origImg = new System.Windows.Forms.PictureBox();
             this.errorImg = new System.Windows.Forms.PictureBox();
             this.decodedImg = new System.Windows.Forms.PictureBox();
@@ -47,7 +47,7 @@
             this.errorImgOptionsBox = new System.Windows.Forms.CheckedListBox();
             this.kValue = new System.Windows.Forms.NumericUpDown();
             this.contrastValue = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.scaleHistogramValue = new System.Windows.Forms.NumericUpDown();
             this.RefreshHistoButton = new System.Windows.Forms.Button();
             this.saveModeBox = new System.Windows.Forms.CheckedListBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -65,7 +65,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.histogram)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kValue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.contrastValue)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.scaleHistogramValue)).BeginInit();
             this.SuspendLayout();
             // 
             // origImg
@@ -78,7 +78,7 @@
             // 
             // errorImg
             // 
-            this.errorImg.Location = new System.Drawing.Point(585, 12);
+            this.errorImg.Location = new System.Drawing.Point(693, 12);
             this.errorImg.Name = "errorImg";
             this.errorImg.Size = new System.Drawing.Size(328, 315);
             this.errorImg.TabIndex = 1;
@@ -86,7 +86,7 @@
             // 
             // decodedImg
             // 
-            this.decodedImg.Location = new System.Drawing.Point(1189, 12);
+            this.decodedImg.Location = new System.Drawing.Point(1268, 22);
             this.decodedImg.Name = "decodedImg";
             this.decodedImg.Size = new System.Drawing.Size(328, 315);
             this.decodedImg.TabIndex = 2;
@@ -110,6 +110,7 @@
             this.encodeButton.TabIndex = 4;
             this.encodeButton.Text = "Encode";
             this.encodeButton.UseVisualStyleBackColor = true;
+            this.encodeButton.Click += new System.EventHandler(this.encodeButton_Click);
             // 
             // saveEncButton
             // 
@@ -119,10 +120,11 @@
             this.saveEncButton.TabIndex = 5;
             this.saveEncButton.Text = "Save";
             this.saveEncButton.UseVisualStyleBackColor = true;
+            this.saveEncButton.Click += new System.EventHandler(this.saveEncButton_Click);
             // 
             // saveDecodedButton
             // 
-            this.saveDecodedButton.Location = new System.Drawing.Point(1291, 387);
+            this.saveDecodedButton.Location = new System.Drawing.Point(1388, 415);
             this.saveDecodedButton.Name = "saveDecodedButton";
             this.saveDecodedButton.Size = new System.Drawing.Size(125, 44);
             this.saveDecodedButton.TabIndex = 8;
@@ -131,7 +133,7 @@
             // 
             // decodeButton
             // 
-            this.decodeButton.Location = new System.Drawing.Point(1374, 337);
+            this.decodeButton.Location = new System.Drawing.Point(1471, 365);
             this.decodeButton.Name = "decodeButton";
             this.decodeButton.Size = new System.Drawing.Size(125, 44);
             this.decodeButton.TabIndex = 7;
@@ -140,7 +142,7 @@
             // 
             // loadCodedButton
             // 
-            this.loadCodedButton.Location = new System.Drawing.Point(1216, 337);
+            this.loadCodedButton.Location = new System.Drawing.Point(1313, 365);
             this.loadCodedButton.Name = "loadCodedButton";
             this.loadCodedButton.Size = new System.Drawing.Size(125, 44);
             this.loadCodedButton.TabIndex = 6;
@@ -157,32 +159,33 @@
             // 
             // histogram
             // 
-            chartArea3.Name = "ChartArea1";
-            this.histogram.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.histogram.Legends.Add(legend3);
-            this.histogram.Location = new System.Drawing.Point(1077, 475);
+            chartArea2.Name = "ChartArea1";
+            this.histogram.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.histogram.Legends.Add(legend2);
+            this.histogram.Location = new System.Drawing.Point(906, 491);
             this.histogram.Name = "histogram";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.histogram.Series.Add(series3);
-            this.histogram.Size = new System.Drawing.Size(495, 376);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.histogram.Series.Add(series2);
+            this.histogram.Size = new System.Drawing.Size(734, 414);
             this.histogram.TabIndex = 11;
             // 
             // refreshErrorImgButton
             // 
-            this.refreshErrorImgButton.Location = new System.Drawing.Point(843, 399);
+            this.refreshErrorImgButton.Location = new System.Drawing.Point(951, 399);
             this.refreshErrorImgButton.Name = "refreshErrorImgButton";
             this.refreshErrorImgButton.Size = new System.Drawing.Size(125, 44);
             this.refreshErrorImgButton.TabIndex = 12;
             this.refreshErrorImgButton.Text = "Refresh";
             this.refreshErrorImgButton.UseVisualStyleBackColor = true;
+            this.refreshErrorImgButton.Click += new System.EventHandler(this.refreshErrorImgButton_Click);
             // 
             // sourceHistogramBox
             // 
             this.sourceHistogramBox.FormattingEnabled = true;
-            this.sourceHistogramBox.Location = new System.Drawing.Point(717, 503);
+            this.sourceHistogramBox.Location = new System.Drawing.Point(546, 491);
             this.sourceHistogramBox.Name = "sourceHistogramBox";
             this.sourceHistogramBox.Size = new System.Drawing.Size(313, 259);
             this.sourceHistogramBox.TabIndex = 13;
@@ -190,7 +193,7 @@
             // errorImgOptionsBox
             // 
             this.errorImgOptionsBox.FormattingEnabled = true;
-            this.errorImgOptionsBox.Location = new System.Drawing.Point(575, 337);
+            this.errorImgOptionsBox.Location = new System.Drawing.Point(683, 337);
             this.errorImgOptionsBox.Name = "errorImgOptionsBox";
             this.errorImgOptionsBox.Size = new System.Drawing.Size(253, 106);
             this.errorImgOptionsBox.TabIndex = 14;
@@ -210,7 +213,12 @@
             // contrastValue
             // 
             this.contrastValue.DecimalPlaces = 1;
-            this.contrastValue.Location = new System.Drawing.Point(843, 365);
+            this.contrastValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.contrastValue.Location = new System.Drawing.Point(951, 365);
             this.contrastValue.Maximum = new decimal(new int[] {
             255,
             0,
@@ -220,27 +228,33 @@
             this.contrastValue.Size = new System.Drawing.Size(82, 22);
             this.contrastValue.TabIndex = 16;
             // 
-            // numericUpDown1
+            // scaleHistogramValue
             // 
-            this.numericUpDown1.DecimalPlaces = 1;
-            this.numericUpDown1.Location = new System.Drawing.Point(1187, 881);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.scaleHistogramValue.DecimalPlaces = 1;
+            this.scaleHistogramValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.scaleHistogramValue.Location = new System.Drawing.Point(903, 935);
+            this.scaleHistogramValue.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(82, 22);
-            this.numericUpDown1.TabIndex = 17;
+            this.scaleHistogramValue.Name = "scaleHistogramValue";
+            this.scaleHistogramValue.Size = new System.Drawing.Size(82, 22);
+            this.scaleHistogramValue.TabIndex = 17;
             // 
             // RefreshHistoButton
             // 
-            this.RefreshHistoButton.Location = new System.Drawing.Point(1318, 859);
+            this.RefreshHistoButton.Location = new System.Drawing.Point(1034, 913);
             this.RefreshHistoButton.Name = "RefreshHistoButton";
             this.RefreshHistoButton.Size = new System.Drawing.Size(125, 44);
             this.RefreshHistoButton.TabIndex = 18;
             this.RefreshHistoButton.Text = "Refresh";
             this.RefreshHistoButton.UseVisualStyleBackColor = true;
+            this.RefreshHistoButton.Click += new System.EventHandler(this.RefreshHistoButton_Click);
             // 
             // saveModeBox
             // 
@@ -268,7 +282,7 @@
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(843, 337);
+            this.textBox3.Location = new System.Drawing.Point(951, 337);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(58, 22);
             this.textBox3.TabIndex = 22;
@@ -284,7 +298,7 @@
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(717, 475);
+            this.textBox5.Location = new System.Drawing.Point(546, 463);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(134, 22);
             this.textBox5.TabIndex = 24;
@@ -292,7 +306,7 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(1187, 857);
+            this.textBox6.Location = new System.Drawing.Point(903, 911);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(118, 22);
             this.textBox6.TabIndex = 25;
@@ -300,7 +314,7 @@
             // 
             // textBox7
             // 
-            this.textBox7.Location = new System.Drawing.Point(1077, 447);
+            this.textBox7.Location = new System.Drawing.Point(906, 463);
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(71, 22);
             this.textBox7.TabIndex = 26;
@@ -308,7 +322,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(717, 789);
+            this.button1.Location = new System.Drawing.Point(546, 777);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(125, 44);
             this.button1.TabIndex = 27;
@@ -317,7 +331,7 @@
             // 
             // computeErrorValues
             // 
-            this.computeErrorValues.Location = new System.Drawing.Point(717, 839);
+            this.computeErrorValues.Location = new System.Drawing.Point(546, 827);
             this.computeErrorValues.Multiline = true;
             this.computeErrorValues.Name = "computeErrorValues";
             this.computeErrorValues.Size = new System.Drawing.Size(147, 53);
@@ -327,7 +341,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1595, 916);
+            this.ClientSize = new System.Drawing.Size(1680, 969);
             this.Controls.Add(this.computeErrorValues);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.textBox7);
@@ -339,7 +353,7 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.saveModeBox);
             this.Controls.Add(this.RefreshHistoButton);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.scaleHistogramValue);
             this.Controls.Add(this.contrastValue);
             this.Controls.Add(this.kValue);
             this.Controls.Add(this.errorImgOptionsBox);
@@ -364,7 +378,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.histogram)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kValue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.contrastValue)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.scaleHistogramValue)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -388,7 +402,7 @@
         private System.Windows.Forms.CheckedListBox errorImgOptionsBox;
         private System.Windows.Forms.NumericUpDown kValue;
         private System.Windows.Forms.NumericUpDown contrastValue;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown scaleHistogramValue;
         private System.Windows.Forms.Button RefreshHistoButton;
         private System.Windows.Forms.CheckedListBox saveModeBox;
         private System.Windows.Forms.TextBox textBox1;
