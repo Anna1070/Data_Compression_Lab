@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Laborator1_citire_scriere_biti;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -7,57 +8,129 @@ using System.Threading.Tasks;
 
 namespace Near_lossless_predictive_coder
 {
-    class Predictor
+    internal class Decoder
     {
-        private int[,] errorPMatrix, errorPQMatrix, errorPDQMatrix, errorMatrix;
-        private byte[,] predictionMatrix, predictionMatrix2, decodedImg;
+        private int[,] errorPQMatrix, errorPDQMatrix;
+        private byte[,] predictionMatrix2, decodedImg;
         private int k;
-
-        private Bitmap originalBitmap;
         private int width;
         private int height;
-        private string imagePath;
+        private string encodedFilePath;
+        private int predictorOption, saveMode;
 
-        public Predictor(string imagePath, int width, int height, int k)
+        public Decoder(string encodedFilePath, int width, int height)
         {
-            this.imagePath = imagePath;
+            this.encodedFilePath = encodedFilePath;
             this.width = width;
             this.height = height;
-            originalBitmap = new Bitmap(imagePath);
-            this.k = k;
 
-            predictionMatrix = new byte[width, height];
             predictionMatrix2 = new byte[width, height];
             decodedImg = new byte[width, height];
-            errorPMatrix = new int[width, height];
             errorPQMatrix = new int[width, height];
             errorPDQMatrix = new int[width, height];
-            errorMatrix = new int[width, height];
-            
         }
 
-        private void SetFirstLine()
+        public void StartDecoding()
         {
-            predictionMatrix[0, 0] = 128;
-            predictionMatrix2[0, 0] = 128;
-            Console.WriteLine($"original: {0},{0}: {originalBitmap.GetPixel(0, 0).R}");
-            Console.WriteLine("First line from original");
-            for (int i = 1; i<width; i++)
+            BitReader bitReader = new BitReader(encodedFilePath);
+            for (int i = 0; i < 1078; i++)
             {
-                Console.WriteLine($"original: {i},{0}: {originalBitmap.GetPixel(i, 0).R}");
+                bitReader.ReadNBits(8);
             }
-            errorPMatrix[0, 0] = originalBitmap.GetPixel(0, 0).R - predictionMatrix[0, 0];
-            errorPQMatrix[0, 0] = (int)Math.Floor((double)(errorPMatrix[0, 0] + k) / (2 * k + 1));
+
+            predictorOption = (int)bitReader.ReadNBits(4);
+            Console.WriteLine($"Predictorul {predictorOption}");
+
+            k = (int)bitReader.ReadNBits(4);
+            Console.WriteLine($"k : {k}");
+
+            saveMode = (int)bitReader.ReadNBits(2);
+            Console.WriteLine($"saveMode: {saveMode}");
+
+            if(saveMode == 0)
+            {
+                Console.WriteLine("Fixed Save Mode");
+                for (int j = 0; j < height; j++)
+                {
+                    for (int i = 0; i < width; i++)
+                    {
+                        uint current9Bits = bitReader.ReadNBits(9);
+                        int value = (int)(current9Bits - 255);
+                        errorPQMatrix[i, j] = value;
+                    }
+                }
+                ReconstructImage();
+            }
+            else if(saveMode == 1)
+            {
+                Console.WriteLine("Table Save Mode");
+                DecodeTableMode(bitReader);
+            }
+            else if(saveMode == 2)
+            {
+                Console.WriteLine("Arithmetic Save Mode");
+                DecodeArithmeticMode();
+            }
+
+            bitReader.Close();
+        }
+
+        private void ReconstructImage()
+        {
+            if (predictorOption!= 1)
+            {
+                DecodeFirstLine();
+                DecodeFirstColumn();
+            }
+            switch (predictorOption)
+            {
+                case 1:
+                    DecodePredictionOption1();
+                    break;
+
+                case 2:
+                    DecodePredictionOption2();
+                    break;
+
+                case 3:
+                    DecodePredictionOption3();
+                    break;
+
+                case 4:
+                    DecodePredictionOption4();
+                    break;
+
+                case 5:
+                    DecodePredictionOption5();
+                    break;
+
+                case 6:
+                    DecodePredictionOption6();
+                    break;
+
+                case 7:
+                    DecodePredictionOption7();
+                    break;
+
+                case 8:
+                    DecodePredictionOption8();
+                    break;
+
+                case 9:
+                    DecodePredictionOption9();
+                    break;
+            }
+        }
+
+        private void DecodeFirstLine()
+        {
+            predictionMatrix2[0, 0] = 128;
             errorPDQMatrix[0, 0] = errorPQMatrix[0, 0] * (2 * k + 1);
             decodedImg[0, 0] = Limit(errorPDQMatrix[0, 0] + predictionMatrix2[0, 0]);
 
             Console.WriteLine($"decoded: {0},{0}: {decodedImg[0, 0]}");
-
             for (int i = 1; i < width; i++)
             {
-                predictionMatrix[i, 0] = decodedImg[i-1, 0];
-                errorPMatrix[i, 0] = originalBitmap.GetPixel(i, 0).R - predictionMatrix[i, 0];
-                errorPQMatrix[i, 0] = (int)Math.Floor((double)(errorPMatrix[i, 0] + k) / (2 * k + 1));
                 errorPDQMatrix[i, 0] = errorPQMatrix[i, 0] * (2 * k + 1);
                 predictionMatrix2[i, 0] = decodedImg[i - 1, 0];
                 decodedImg[i, 0] = Limit(errorPDQMatrix[i, 0] + predictionMatrix2[i, 0]);
@@ -65,18 +138,10 @@ namespace Near_lossless_predictive_coder
             }
         }
 
-        private void SetFirstColumn()
+        private void DecodeFirstColumn()
         {
             for (int j = 1; j < height; j++)
             {
-                Console.WriteLine($"original: {0},{j}: {originalBitmap.GetPixel(0, j).R}");
-            }
-
-            for (int j = 1; j < height; j++)
-            {
-                predictionMatrix[0, j] = decodedImg[0, j - 1];
-                errorPMatrix[0, j] = originalBitmap.GetPixel(0, j).R - predictionMatrix[0, j];
-                errorPQMatrix[0, j] = (int)Math.Floor((double)(errorPMatrix[0, j] + k) / (2 * k + 1));
                 errorPDQMatrix[0, j] = errorPQMatrix[0, j] * (2 * k + 1);
                 predictionMatrix2[0, j] = decodedImg[0, j - 1];
                 decodedImg[0, j] = Limit(errorPDQMatrix[0, j] + predictionMatrix2[0, j]);
@@ -84,19 +149,12 @@ namespace Near_lossless_predictive_coder
             }
         }
 
-        public void Predictor128()
+        private void DecodePredictionOption1()
         {
-            //SetFirstLine();
-            //SetFirstColumn();
-
-            Console.WriteLine("Decoded:");
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
                 {
-                    predictionMatrix[i, j] = 128;
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = 128;
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
@@ -104,24 +162,14 @@ namespace Near_lossless_predictive_coder
                 }
                 Console.WriteLine();
             }
-
-            calculateErrorMatrixPredictor();
         }
-
-        public void PredictorA()
+        public void DecodePredictionOption2()
         {
-            SetFirstLine();
-            SetFirstColumn();
-
-            Console.WriteLine($"{originalBitmap.GetPixel(1, 1).R}");
             Console.WriteLine("Decoded:");
             for (int j = 1; j < height; j++)
             {
                 for (int i = 1; i < width; i++)
                 {
-                    predictionMatrix[i, j] = decodedImg[i - 1, j];
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = decodedImg[i - 1, j];
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
@@ -129,59 +177,37 @@ namespace Near_lossless_predictive_coder
                 }
                 Console.WriteLine();
             }
-
-            calculateErrorMatrixPredictor();
         }
 
-        public void PredictorB()
+        public void DecodePredictionOption3()
         {
-            SetFirstLine();
-            SetFirstColumn();
-
             for (int j = 1; j < height; j++)
             {
                 for (int i = 1; i < width; i++)
                 {
-                    predictionMatrix[i, j] = decodedImg[i, j - 1];
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = decodedImg[i, j - 1];
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
                 }
             }
-
-            calculateErrorMatrixPredictor();
         }
 
-        public void PredictorC()
+        public void DecodePredictionOption4()
         {
-            SetFirstLine();
-            SetFirstColumn();
-
             for (int j = 1; j < height; j++)
             {
                 for (int i = 1; i < width; i++)
                 {
-                    predictionMatrix[i, j] = decodedImg[i - 1, j - 1];
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = decodedImg[i - 1, j - 1];
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
                 }
             }
-
-            calculateErrorMatrixPredictor();
         }
 
-        public void Predictor5()
+        public void DecodePredictionOption5()
         {
-            SetFirstLine();
-            SetFirstColumn();
             byte a, b, c;
-
-            Console.WriteLine($"{originalBitmap.GetPixel(1, 1).R}");
             Console.WriteLine("Decoded:");
             for (int j = 1; j < height; j++)
             {
@@ -190,9 +216,6 @@ namespace Near_lossless_predictive_coder
                     a = decodedImg[i - 1, j];
                     b = decodedImg[i, j - 1];
                     c = decodedImg[i - 1, j - 1];
-                    predictionMatrix[i, j] = Limit(a + b - c);
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = Limit(a + b - c); ;
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
@@ -200,14 +223,10 @@ namespace Near_lossless_predictive_coder
                 }
                 Console.WriteLine();
             }
-
-            calculateErrorMatrixPredictor();
         }
 
-        public void Predictor6()
+        public void DecodePredictionOption6()
         {
-            SetFirstLine();
-            SetFirstColumn();
             byte a, b, c;
 
             for (int j = 1; j < height; j++)
@@ -217,22 +236,15 @@ namespace Near_lossless_predictive_coder
                     a = decodedImg[i - 1, j];
                     b = decodedImg[i, j - 1];
                     c = decodedImg[i - 1, j - 1];
-                    predictionMatrix[i, j] = Limit(a + (b - c) / 2);
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = Limit(a + (b - c) / 2);
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
                 }
             }
-
-            calculateErrorMatrixPredictor();
         }
 
-        public void Predictor7()
+        public void DecodePredictionOption7()
         {
-            SetFirstLine();
-            SetFirstColumn();
             byte a, b, c;
 
             for (int j = 1; j < height; j++)
@@ -242,23 +254,16 @@ namespace Near_lossless_predictive_coder
                     a = decodedImg[i - 1, j];
                     b = decodedImg[i, j - 1];
                     c = decodedImg[i - 1, j - 1];
-                    predictionMatrix[i, j] = Limit(b + (a - c) / 2); ;
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = Limit(b + (a - c) / 2); ;
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
                 }
             }
-
-            calculateErrorMatrixPredictor();
         }
 
 
-        public void Predictor8()
+        public void DecodePredictionOption8()
         {
-            SetFirstLine();
-            SetFirstColumn();
             byte a, b;
 
             for (int j = 1; j < height; j++)
@@ -267,22 +272,15 @@ namespace Near_lossless_predictive_coder
                 {
                     a = decodedImg[i - 1, j];
                     b = decodedImg[i, j - 1];
-                    predictionMatrix[i, j] = Limit((a + b) / 2);
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     predictionMatrix2[i, j] = Limit((a + b) / 2);
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
                 }
             }
-
-            calculateErrorMatrixPredictor();
         }
 
-        public void Predictor9()
+        public void DecodePredictionOption9()
         {
-            SetFirstLine();
-            SetFirstColumn();
             byte a, b, c;
 
             for (int j = 1; j < height; j++)
@@ -294,63 +292,85 @@ namespace Near_lossless_predictive_coder
                     c = decodedImg[i - 1, j - 1];
                     if (c >= Math.Max(a, b))
                     {
-                        predictionMatrix[i, j] = (byte)Math.Min(a, b);
                         predictionMatrix2[i, j] = (byte)Math.Min(a, b);
                     }
                     else if (c <= Math.Min(a, b))
                     {
-                        predictionMatrix[i, j] = (byte)Math.Max(a, b);
                         predictionMatrix2[i, j] = (byte)Math.Max(a, b);
                     }
                     else
                     {
-                        predictionMatrix[i, j] = Limit(a + b - c);
                         predictionMatrix2[i, j] = Limit(a + b - c);
                     }
-                    errorPMatrix[i, j] = originalBitmap.GetPixel(i, j).R - predictionMatrix[i, j];
-                    errorPQMatrix[i, j] = (int)Math.Floor((double)(errorPMatrix[i, j] + k) / (2 * k + 1));
                     errorPDQMatrix[i, j] = errorPQMatrix[i, j] * (2 * k + 1);
                     decodedImg[i, j] = Limit(errorPDQMatrix[i, j] + predictionMatrix2[i, j]);
                 }
             }
-
-            calculateErrorMatrixPredictor();
         }
 
-        protected void calculateErrorMatrixPredictor()
+        private void DecodeTableMode(BitReader bitReader)
         {
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
                 {
-                    errorMatrix[i, j] = (int)(originalBitmap.GetPixel(i, j).R - decodedImg[i, j]);
+                    int L = 0;
+                    while (bitReader.ReadNBits(1) == 1)
+                    {
+                        L++;
+                    }
+
+                    int value = 0;
+                    if (L > 0)
+                    {
+                        uint index = bitReader.ReadNBits(L);
+                        int halfPoint = 1 << (L - 1);
+
+                        if (index >= halfPoint)
+                        {
+                            value = (int)index;
+                        }
+                        else
+                        {
+                            value = (int)index + 1 - (1 << L);
+                        }
+                    }
+
+                    errorPQMatrix[i, j] = value;
                 }
             }
+
+            ReconstructImage();
         }
 
-        private byte Limit(int value)
+        private void DecodeArithmeticMode()
         {
-            if (value > 255) 
-                return 255;
-            if (value < 0) 
-                return 0;
 
-            return (byte)value;
         }
 
-        public int[,] GetPredictionErrorMatrix()
+        public byte[,] GetDecodedImageDecoder()
         {
-            return errorPMatrix;
+            return decodedImg;
         }
 
-        public int[,] GetQuantizedPredictionErrorMatrix()
+        public int[,] GetPQMatrixDecoder()
         {
             return errorPQMatrix;
         }
 
-        public byte[,] GetDecodedPredictorImage()
+        public int[,] GetPDQMatrixDecoder()
         {
-            return decodedImg;
+            return errorPDQMatrix;
+        }
+
+        private byte Limit(int value)
+        {
+            if (value > 255)
+                return 255;
+            if (value < 0)
+                return 0;
+
+            return (byte)value;
         }
     }
 }

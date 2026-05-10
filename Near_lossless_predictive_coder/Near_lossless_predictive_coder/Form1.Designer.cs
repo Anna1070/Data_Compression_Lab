@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.origImg = new System.Windows.Forms.PictureBox();
             this.errorImg = new System.Windows.Forms.PictureBox();
             this.decodedImg = new System.Windows.Forms.PictureBox();
@@ -57,7 +57,7 @@
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.textBox7 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.computeErrorButton = new System.Windows.Forms.Button();
             this.computeErrorValues = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.origImg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorImg)).BeginInit();
@@ -130,6 +130,7 @@
             this.saveDecodedButton.TabIndex = 8;
             this.saveDecodedButton.Text = "Save";
             this.saveDecodedButton.UseVisualStyleBackColor = true;
+            this.saveDecodedButton.Click += new System.EventHandler(this.saveDecodedButton_Click);
             // 
             // decodeButton
             // 
@@ -139,6 +140,7 @@
             this.decodeButton.TabIndex = 7;
             this.decodeButton.Text = "Decode";
             this.decodeButton.UseVisualStyleBackColor = true;
+            this.decodeButton.Click += new System.EventHandler(this.decodeButton_Click);
             // 
             // loadCodedButton
             // 
@@ -148,6 +150,7 @@
             this.loadCodedButton.TabIndex = 6;
             this.loadCodedButton.Text = "Load";
             this.loadCodedButton.UseVisualStyleBackColor = true;
+            this.loadCodedButton.Click += new System.EventHandler(this.loadCodedButton_Click);
             // 
             // predictorSelectionBox
             // 
@@ -159,16 +162,16 @@
             // 
             // histogram
             // 
-            chartArea2.Name = "ChartArea1";
-            this.histogram.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.histogram.Legends.Add(legend2);
+            chartArea1.Name = "ChartArea1";
+            this.histogram.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.histogram.Legends.Add(legend1);
             this.histogram.Location = new System.Drawing.Point(906, 491);
             this.histogram.Name = "histogram";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.histogram.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.histogram.Series.Add(series1);
             this.histogram.Size = new System.Drawing.Size(734, 414);
             this.histogram.TabIndex = 11;
             // 
@@ -320,14 +323,15 @@
             this.textBox7.TabIndex = 26;
             this.textBox7.Text = "Histogram";
             // 
-            // button1
+            // computeErrorButton
             // 
-            this.button1.Location = new System.Drawing.Point(546, 777);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(125, 44);
-            this.button1.TabIndex = 27;
-            this.button1.Text = "Compute error";
-            this.button1.UseVisualStyleBackColor = true;
+            this.computeErrorButton.Location = new System.Drawing.Point(546, 777);
+            this.computeErrorButton.Name = "computeErrorButton";
+            this.computeErrorButton.Size = new System.Drawing.Size(125, 44);
+            this.computeErrorButton.TabIndex = 27;
+            this.computeErrorButton.Text = "Compute error";
+            this.computeErrorButton.UseVisualStyleBackColor = true;
+            this.computeErrorButton.Click += new System.EventHandler(this.computeErrorButton_Click);
             // 
             // computeErrorValues
             // 
@@ -343,7 +347,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1680, 969);
             this.Controls.Add(this.computeErrorValues);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.computeErrorButton);
             this.Controls.Add(this.textBox7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox5);
@@ -412,7 +416,7 @@
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button computeErrorButton;
         private System.Windows.Forms.TextBox computeErrorValues;
     }
 }

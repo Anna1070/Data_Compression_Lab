@@ -19,14 +19,24 @@ namespace Near_lossless_predictive_coder
         string originalFilePath;
         int width, height;
 
-        //predictor
+        //Predictor
         byte[] first1078Bytes;
         Predictor predictor;
         int predictorOption;
         int[,] errorPMatrixPredictor, errorPQMatrixPredictor;
-        byte[,] decodedImage;
-
+        byte[,] decodedImagePredictor;
         StoreEncoded store;
+
+        //Decoder
+        byte[] first1078BytesEncoded;
+        string encodedFilePath;
+        Decoder decoder;
+        byte[,] decodedMatrixDecoder;
+        int[,] errorPQMatrixDecoder, errorPDQMatrixDecoder;
+
+        //Error
+        int min = int.MaxValue;
+        int max = int.MinValue;
 
 
         public Form1()
@@ -68,43 +78,6 @@ namespace Near_lossless_predictive_coder
             }
         }
 
-        private void saveEncButton_Click(object sender, EventArgs e)
-        {
-            if (originalFilePath != null)
-            {
-                if (saveModeBox.CheckedItems.Count == 1)
-                {
-                    if(errorPQMatrixPredictor != null)
-                    {
-                        string saveMode = saveModeBox.CheckedItems[0].ToString();
-                        switch (saveMode)
-                        {
-                            case "Fixed":
-                                string encodedFilePath = Path.GetFullPath(originalFilePath)+ "." + "k" + kValue.Value + "p" + predictorOption + "F" + ".nl";
-                                store = new StoreEncoded(width, height, predictorOption, first1078Bytes, (int)kValue.Value, encodedFilePath, saveMode, errorPQMatrixPredictor);
-                                store.StartStoringFixed();
-                                MessageBox.Show("Finished storing");
-                                break;
-
-                            case "Table":
-                                break;
-
-                            case "Arithmetic":
-                                break;
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Please select one save mode");
-                }
-            }
-            else
-            {
-                MessageBox.Show("Please select an image first");
-            }
-        }
-
         private void encodeButton_Click(object sender, EventArgs e)
         {
             if (originalFilePath != null)
@@ -117,7 +90,7 @@ namespace Near_lossless_predictive_coder
                     width = 256;
                     height = 256;
 
-                    first1078Bytes = getFirst1078Bytes(originalFilePath);
+                    first1078Bytes = GetFirst1078Bytes(originalFilePath);
                     Console.WriteLine(first1078Bytes.Length);
 
                     predictor = new Predictor(originalFilePath, width, height, (int)kValue.Value);
@@ -126,6 +99,48 @@ namespace Near_lossless_predictive_coder
                 else
                 {
                     MessageBox.Show("Please select only one of the predictors");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select an image first");
+            }
+        }
+
+        private void saveEncButton_Click(object sender, EventArgs e)
+        {
+            if (originalFilePath != null)
+            {
+                if (saveModeBox.CheckedItems.Count == 1)
+                {
+                    if (errorPQMatrixPredictor != null)
+                    {
+                        string saveMode = saveModeBox.CheckedItems[0].ToString();
+                        string encodedFilePath;
+                        switch (saveMode)
+                        {
+                            case "Fixed":
+                                encodedFilePath = Path.GetFullPath(originalFilePath) + "." + "k" + kValue.Value + "p" + predictorOption + "F" + ".nl";
+                                store = new StoreEncoded(width, height, predictorOption, first1078Bytes, (int)kValue.Value, encodedFilePath, errorPQMatrixPredictor);
+                                store.StartStoringFixed();
+                                MessageBox.Show("Finished storing");
+                                break;
+
+                            case "Table":
+                                encodedFilePath = Path.GetFullPath(originalFilePath) + "." + "k" + kValue.Value + "p" + predictorOption + "T" + ".nl";
+                                store = new StoreEncoded(width, height, predictorOption, first1078Bytes, (int)kValue.Value, encodedFilePath, errorPQMatrixPredictor);
+                                store.StartStoringTable();
+                                MessageBox.Show("Finished storing");
+                                break;
+
+                            case "Arithmetic":
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select one save mode");
                 }
             }
             else
@@ -205,12 +220,12 @@ namespace Near_lossless_predictive_coder
                     switch (histogramOption)
                     {
                         case "Original image":
-                            for (int i = 0; i < height; i++)
+                            for (int j = 0; j < height; j++)
                             {
-                                for (int j = 0; j < width; j++)
+                                for (int i = 0; i < width; i++)
                                 {
                                     
-                                    int value = originalImage.GetPixel(j, i).R;
+                                    int value = originalImage.GetPixel(i, j).R;
                                     myHistogram[value + 255]++;
                                 }
                             }
@@ -222,11 +237,11 @@ namespace Near_lossless_predictive_coder
                                 MessageBox.Show("Please encode the image first!");
                                 return;
                             }
-                            for (int i = 0; i < height; i++)
+                            for (int j = 0; j < height; j++)
                             {
-                                for (int j = 0; j < width; j++)
+                                for (int i = 0; i < width; i++)
                                 {
-                                    int val = errorPMatrixPredictor[j, i];
+                                    int val = errorPMatrixPredictor[i, j];
 
                                     if (val < -255)
                                     {
@@ -248,11 +263,11 @@ namespace Near_lossless_predictive_coder
                                 MessageBox.Show("Please encode the image first!");
                                 return;
                             }
-                            for (int i = 0; i < height; i++)
+                            for (int j = 0; j < height; j++)
                             {
-                                for (int j = 0; j < width; j++)
+                                for (int i = 0; i < width; i++)
                                 {
-                                    int val = errorPQMatrixPredictor[j, i];
+                                    int val = errorPQMatrixPredictor[i, j];
 
                                     if (val < -255)
                                     {
@@ -269,30 +284,93 @@ namespace Near_lossless_predictive_coder
                             break;
 
                         case "Decoded image (C)":
-                            if (decodedImage == null)
+                            if (decodedImagePredictor == null)
                             {
                                 MessageBox.Show("Please encode the image first!");
                                 return;
                             }
 
-                            for (int i = 0; i < height; i++)
+                            for (int j = 0; j < height; j++)
                             {
-                                for (int j = 0; j < width; j++)
+                                for (int i = 0; i < width; i++)
                                 {
 
-                                    int value = decodedImage[j, i];
+                                    int value = decodedImagePredictor[i, j];
                                     myHistogram[value + 255]++;
                                 }
                             }
                             break;
 
                         case "Q prediction error image (D)":
+                            if (errorPQMatrixDecoder == null)
+                            {
+                                MessageBox.Show("Please decode an image first!");
+                                return;
+                            }
+                            for (int j = 0; j < height; j++)
+                            {
+                                for (int i = 0; i < width; i++)
+                                {
+                                    int val = errorPQMatrixDecoder[i, j];
+
+                                    if (val < -255)
+                                    {
+                                        val = -255;
+                                    }
+                                    if (val > 255)
+                                    {
+                                        val = 255;
+                                    }
+
+                                    myHistogram[val + 255]++;
+                                }
+                            }
                             break;
 
                         case "DQ prediction error image (D)":
+                            if (errorPDQMatrixDecoder == null)
+                            {
+                                MessageBox.Show("Please decode an image first!");
+                                return;
+                            }
+                            for (int j = 0; j < height; j++)
+                            {
+                                for (int i = 0; i < width; i++)
+                                {
+                                    int val = errorPDQMatrixDecoder[i, j];
+
+                                    if (val < -255)
+                                    {
+                                        val = -255;
+                                    }
+                                    if (val > 255)
+                                    {
+                                        val = 255;
+                                    }
+
+                                    myHistogram[val + 255]++;
+                                }
+                            }
                             break;
 
                         case "Decoded image (D)":
+                            if (decodedMatrixDecoder == null)
+                            {
+                                MessageBox.Show("Please decode an image first!");
+                                return;
+                            }
+
+                            Bitmap decodedImageBitmap = CreateBitmapForDecodedMatrix(decodedMatrixDecoder, width, height);
+                            for (int j = 0; j < height; j++)
+                            {
+                                for (int i = 0; i < width; i++)
+                                {
+
+                                    int value = decodedImageBitmap.GetPixel(i, j).R;
+                                    myHistogram[value + 255]++;
+                                }
+                            }
+
                             break;
 
                     }
@@ -311,7 +389,71 @@ namespace Near_lossless_predictive_coder
             }
         }
 
-        public byte[] getFirst1078Bytes(string filePath)
+        private void loadCodedButton_Click(object sender, EventArgs e)
+        {
+            file.OpenFile();
+            encodedFilePath = file.getFilePath();
+            if (encodedFilePath != null)
+            {
+                if (file.CheckEncodedExtension(encodedFilePath))
+                {
+
+                    MessageBox.Show("Encoded file loaded");
+                }
+                else
+                {
+                    encodedFilePath = null;
+                    MessageBox.Show("Please choose a file with the .nl extension");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please choose an encoded file");
+            }
+        }
+
+        private void decodeButton_Click(object sender, EventArgs e)
+        {
+            if (encodedFilePath == null)
+            {
+                MessageBox.Show("Please load an encoded file first");
+            }
+            else
+            {
+                first1078BytesEncoded = GetFirst1078Bytes(encodedFilePath);
+                Console.WriteLine(first1078BytesEncoded.Length);
+
+                int width = 256;
+                int height = 256;
+
+                Decoder decoder = new Decoder(encodedFilePath, width, height);
+
+                decoder.StartDecoding();
+                decodedMatrixDecoder = decoder.GetDecodedImageDecoder();
+                errorPQMatrixDecoder = decoder.GetPQMatrixDecoder();
+                errorPDQMatrixDecoder = decoder.GetPDQMatrixDecoder();
+                decodedImg.Image = CreateBitmapForDecodedMatrix(decodedMatrixDecoder, width, height);
+            }
+        }
+
+        private void saveDecodedButton_Click(object sender, EventArgs e)
+        {
+            if (encodedFilePath != null && decodedMatrixDecoder != null)
+            {
+                width = 256; height = 256;
+                string decodedFilePath = Path.GetFullPath(encodedFilePath) + ".bmp";
+                StoreDecoded storeDecoded = new StoreDecoded(first1078BytesEncoded, decodedFilePath, CreateBitmapForDecodedMatrix(decodedMatrixDecoder,width, height), width, height);
+                storeDecoded.startStoring();
+                MessageBox.Show("Finished storing");
+            }
+            else
+            {
+                MessageBox.Show("Please load an encoded file first and decode it");
+            }
+        }
+
+
+        public byte[] GetFirst1078Bytes(string filePath)
         {
             byte[] first1078Bytes = new byte[1078];
             byte[] allBytes = File.ReadAllBytes(filePath);
@@ -322,6 +464,20 @@ namespace Near_lossless_predictive_coder
             return first1078Bytes;
         }
 
+        private void computeErrorButton_Click(object sender, EventArgs e)
+        {
+            if(originalFilePath == null && decodedMatrixDecoder == null)
+            {
+                MessageBox.Show("Please choose an image and decode it first");
+            }
+            else
+            {
+                Bitmap origImg = new Bitmap(originalFilePath);
+                ComputeReconstructionError(ConvertBitmapToByteMatrix(origImg, width, height), decodedMatrixDecoder, width, height);
+                computeErrorValues.Text = $"Min : {min} \nMax : {max}";
+            }
+        }
+
         public void Predict(Object option)
         {
             switch (option)
@@ -329,86 +485,61 @@ namespace Near_lossless_predictive_coder
                 case "128":
                     Console.WriteLine("Predictor 128 selected");
                     predictor.Predictor128();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 1;
                     break;
 
                 case "A":
                     Console.WriteLine("Predictor A selected");
                     predictor.PredictorA();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
-
                     predictorOption = 2;
                     break;
 
                 case "B":
                     Console.WriteLine("Predictor B selected");
                     predictor.PredictorB();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 3;
                     break;
 
                 case "C":
                     Console.WriteLine("Predictor C selected");
                     predictor.PredictorC();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 4;
                     break;
 
                 case "A+B-C":
                     Console.WriteLine("Predictor A+B-C selected");
                     predictor.Predictor5();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 5;
                     break;
 
                 case "A+(B-C)/2":
                     Console.WriteLine("Predictor A+(B-C)/2 selected");
                     predictor.Predictor6();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 6;
                     break;
 
                 case "B+(A-C)/2":
                     Console.WriteLine("Predictor B+(A-C)/2 selected");
                     predictor.Predictor7();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 7;
                     break;
 
                 case "(A+B)/2":
                     Console.WriteLine("Predictor (A+B)/2 selected");
                     predictor.Predictor8();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 8;
                     break;
 
                 case "jpegLS":
                     Console.WriteLine("Predictor jpegLS selected");
                     predictor.Predictor9();
-                    errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
-                    errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
-                    decodedImage = predictor.GetDecodedPredictorImage();
                     predictorOption = 9;
                     break;
-
             }
+
+            errorPMatrixPredictor = predictor.GetPredictionErrorMatrix();
+            errorPQMatrixPredictor = predictor.GetQuantizedPredictionErrorMatrix();
+            decodedImagePredictor = predictor.GetDecodedPredictorImage();
         }
 
         public Bitmap CreateBitmapForPredictionError(int[,] errorMatrix, double contrast)
@@ -436,6 +567,59 @@ namespace Near_lossless_predictive_coder
             }
 
             return bitmap;
+        }
+
+        public Bitmap CreateBitmapForDecodedMatrix(byte[,] decodedMatrix, int width, int height)
+        {
+            Bitmap bitmap = new Bitmap(width, height);
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    int val = decodedMatrix[i, j];
+                    Color pixelColor = Color.FromArgb(val, val, val);
+                    bitmap.SetPixel(i, j, pixelColor);
+                }
+            }
+
+            return bitmap;
+        }
+
+        public byte[,] ConvertBitmapToByteMatrix(Bitmap bmp, int width, int height)
+        {
+            byte[,] matrix = new byte[width, height];
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    matrix[i, j] = bmp.GetPixel(i, j).R;
+                }
+            }
+
+            return matrix;
+        }
+
+        public void ComputeReconstructionError(byte[,] originalMatrix, byte[,] decodedMatrix, int width, int height)
+        {
+            int[,] errorMatrix = new int[width, height];
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    errorMatrix[i, j] = originalMatrix[i, j] - decodedMatrix[i, j];
+                    if(errorMatrix[i, j] > max)
+                    {
+                        max = errorMatrix[i, j];
+                    }
+                    if (errorMatrix[i, j] < min)
+                    {
+                        min = errorMatrix[i, j];
+                    }
+                }
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Near_lossless_predictive_coder
         string saveMode;
         int[,] quantizedErrorMatrix;
 
-        public StoreEncoded(int width, int height, int predictorOption, byte[] first1078Bytes, int k, string encodedFilePath, string saveMode, int[,] quantizedErrorMatrix)
+        public StoreEncoded(int width, int height, int predictorOption, byte[] first1078Bytes, int k, string encodedFilePath, int[,] quantizedErrorMatrix)
         {
             this.width = width;
             this.height = height;
@@ -25,14 +25,11 @@ namespace Near_lossless_predictive_coder
             this.first1078Bytes = first1078Bytes;
             this.k = k;
             this.encodedFilePath = encodedFilePath;
-            this.saveMode = saveMode;
             this.quantizedErrorMatrix = quantizedErrorMatrix;
         }
 
-        public void StartStoringFixed()
+        private void StoreHeaderPredictorK(BitWriter bitWriter)
         {
-            BitWriter bitWriter= new BitWriter(encodedFilePath);
-
             Console.WriteLine("/////////////////////// First 1078 bytes ////////////////////////////////////////");
             for (int i = 0; i < first1078Bytes.Length; i++)
             {
@@ -45,6 +42,13 @@ namespace Near_lossless_predictive_coder
 
             Console.WriteLine("/////////////////////// k value ////////////////////////////////////////");
             bitWriter.WriteNBits((uint)k, 4);
+        }
+
+        public void StartStoringFixed()
+        {
+            BitWriter bitWriter= new BitWriter(encodedFilePath);
+
+            StoreHeaderPredictorK(bitWriter);
 
             Console.WriteLine("/////////////////////// Save Mode ////////////////////////////////////////");
             bitWriter.WriteNBits((uint)0, 2);
@@ -58,6 +62,52 @@ namespace Near_lossless_predictive_coder
                     uint newValue = (uint)value + 255;
 
                     bitWriter.WriteNBits(newValue, 9);
+                }
+            }
+
+            bitWriter.Close();
+        }
+
+        public void StartStoringTable()
+        {
+            BitWriter bitWriter = new BitWriter(encodedFilePath);
+
+            StoreHeaderPredictorK(bitWriter);
+
+            Console.WriteLine("/////////////////////// Save Mode ////////////////////////////////////////");
+            bitWriter.WriteNBits((uint)1, 2);
+
+            Console.WriteLine("/////////////////////// Quantized Matrix ////////////////////////////////////////");
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    int value = quantizedErrorMatrix[i, j];
+
+                    if(value == 0)
+                    {
+                        bitWriter.WriteNBits(0, 1);
+                    }
+                    else
+                    {
+                        int L = (int)Math.Floor(Math.Log(Math.Abs(value), 2)) + 1;
+                        uint unaryCode = (uint)(((1 << L) - 1) << 1);
+                        int unaryLength = L + 1;
+
+                        bitWriter.WriteNBits(unaryCode, unaryLength);
+
+                        int index;
+                        if (value > 0)
+                        {
+                            index = value;
+                        }
+                        else
+                        {
+                            index = value - 1 + (1 << L);
+                        }
+
+                        bitWriter.WriteNBits((uint)index, L);
+                    }  
                 }
             }
 
