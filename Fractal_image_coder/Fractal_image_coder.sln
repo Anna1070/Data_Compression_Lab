@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fractal_image_coder", "Fractal_image_coder\Fractal_image_coder.csproj", "{5E7D9AF5-C872-490B-A2ED-9062A6F6601A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E7D9AF5-C872-490B-A2ED-9062A6F6601A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E7D9AF5-C872-490B-A2ED-9062A6F6601A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E7D9AF5-C872-490B-A2ED-9062A6F6601A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E7D9AF5-C872-490B-A2ED-9062A6F6601A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {034A962C-37FC-48A2-910C-81CA4BC9C168}
+	EndGlobalSection
+EndGlobal
