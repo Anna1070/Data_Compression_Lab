@@ -38,7 +38,6 @@ namespace Laborator1_citire_scriere_biti
             if (IsBufferFull())
             {
                 fileStream.WriteByte(bufferWrite);
-                Console.WriteLine(bufferWrite);
                 bufferWrite = 0;
                 numberOfBitsWrite = 0;
             }
@@ -59,8 +58,6 @@ namespace Laborator1_citire_scriere_biti
             {
                 bufferWrite = (byte)(bufferWrite << (8 - numberOfBitsWrite));
                 fileStream.WriteByte(bufferWrite);
-                Console.WriteLine(bufferWrite);
-
             }
             fileStream.Close();
         }

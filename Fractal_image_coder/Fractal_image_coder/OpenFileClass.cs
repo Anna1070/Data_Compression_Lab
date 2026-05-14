@@ -23,7 +23,7 @@ namespace Fractal_image_coder
 
         public bool CheckBMPExtension(string filePath)
         {
-            if (Path.GetExtension(filePath) != ".bmp")
+            if (Path.GetExtension(filePath).ToLower() != ".bmp")
             {
                 return false;
             }
