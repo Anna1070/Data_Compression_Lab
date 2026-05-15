@@ -54,7 +54,7 @@
             // originalImageBox
             // 
             this.originalImageBox.Location = new System.Drawing.Point(32, 21);
-            this.originalImageBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.originalImageBox.Margin = new System.Windows.Forms.Padding(2);
             this.originalImageBox.Name = "originalImageBox";
             this.originalImageBox.Size = new System.Drawing.Size(512, 512);
             this.originalImageBox.TabIndex = 0;
@@ -65,7 +65,7 @@
             // decodedImgBox
             // 
             this.decodedImgBox.Location = new System.Drawing.Point(727, 21);
-            this.decodedImgBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.decodedImgBox.Margin = new System.Windows.Forms.Padding(2);
             this.decodedImgBox.Name = "decodedImgBox";
             this.decodedImgBox.Size = new System.Drawing.Size(512, 512);
             this.decodedImgBox.TabIndex = 1;
@@ -74,7 +74,7 @@
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(32, 566);
-            this.progressBar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar.Maximum = 4096;
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(769, 21);
@@ -83,7 +83,7 @@
             // loadOrigImgButton
             // 
             this.loadOrigImgButton.Location = new System.Drawing.Point(32, 607);
-            this.loadOrigImgButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.loadOrigImgButton.Margin = new System.Windows.Forms.Padding(2);
             this.loadOrigImgButton.Name = "loadOrigImgButton";
             this.loadOrigImgButton.Size = new System.Drawing.Size(74, 29);
             this.loadOrigImgButton.TabIndex = 3;
@@ -94,7 +94,7 @@
             // saveProcessedButton
             // 
             this.saveProcessedButton.Location = new System.Drawing.Point(32, 648);
-            this.saveProcessedButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.saveProcessedButton.Margin = new System.Windows.Forms.Padding(2);
             this.saveProcessedButton.Name = "saveProcessedButton";
             this.saveProcessedButton.Size = new System.Drawing.Size(74, 29);
             this.saveProcessedButton.TabIndex = 4;
@@ -105,7 +105,7 @@
             // processButton
             // 
             this.processButton.Location = new System.Drawing.Point(118, 607);
-            this.processButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.processButton.Margin = new System.Windows.Forms.Padding(2);
             this.processButton.Name = "processButton";
             this.processButton.Size = new System.Drawing.Size(74, 29);
             this.processButton.TabIndex = 5;
@@ -116,7 +116,7 @@
             // loadInitialImgButton
             // 
             this.loadInitialImgButton.Location = new System.Drawing.Point(1079, 569);
-            this.loadInitialImgButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.loadInitialImgButton.Margin = new System.Windows.Forms.Padding(2);
             this.loadInitialImgButton.Name = "loadInitialImgButton";
             this.loadInitialImgButton.Size = new System.Drawing.Size(74, 29);
             this.loadInitialImgButton.TabIndex = 6;
@@ -127,7 +127,7 @@
             // loadProcessedImgButton
             // 
             this.loadProcessedImgButton.Location = new System.Drawing.Point(1165, 566);
-            this.loadProcessedImgButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.loadProcessedImgButton.Margin = new System.Windows.Forms.Padding(2);
             this.loadProcessedImgButton.Name = "loadProcessedImgButton";
             this.loadProcessedImgButton.Size = new System.Drawing.Size(74, 37);
             this.loadProcessedImgButton.TabIndex = 7;
@@ -138,7 +138,7 @@
             // decodeButton
             // 
             this.decodeButton.Location = new System.Drawing.Point(1165, 610);
-            this.decodeButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.decodeButton.Margin = new System.Windows.Forms.Padding(2);
             this.decodeButton.Name = "decodeButton";
             this.decodeButton.Size = new System.Drawing.Size(74, 29);
             this.decodeButton.TabIndex = 8;
@@ -149,7 +149,7 @@
             // saveDecodedButton
             // 
             this.saveDecodedButton.Location = new System.Drawing.Point(1165, 652);
-            this.saveDecodedButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.saveDecodedButton.Margin = new System.Windows.Forms.Padding(2);
             this.saveDecodedButton.Name = "saveDecodedButton";
             this.saveDecodedButton.Size = new System.Drawing.Size(74, 29);
             this.saveDecodedButton.TabIndex = 9;
@@ -160,7 +160,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(1058, 614);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(42, 20);
             this.textBox1.TabIndex = 10;
@@ -169,7 +169,7 @@
             // numberStepsDecode
             // 
             this.numberStepsDecode.Location = new System.Drawing.Point(1103, 614);
-            this.numberStepsDecode.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.numberStepsDecode.Margin = new System.Windows.Forms.Padding(2);
             this.numberStepsDecode.Name = "numberStepsDecode";
             this.numberStepsDecode.Size = new System.Drawing.Size(50, 20);
             this.numberStepsDecode.TabIndex = 11;
@@ -177,7 +177,7 @@
             // domainPictureBox
             // 
             this.domainPictureBox.Location = new System.Drawing.Point(641, 607);
-            this.domainPictureBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.domainPictureBox.Margin = new System.Windows.Forms.Padding(2);
             this.domainPictureBox.Name = "domainPictureBox";
             this.domainPictureBox.Size = new System.Drawing.Size(160, 160);
             this.domainPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -187,7 +187,7 @@
             // rangePictureBox
             // 
             this.rangePictureBox.Location = new System.Drawing.Point(481, 607);
-            this.rangePictureBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.rangePictureBox.Margin = new System.Windows.Forms.Padding(2);
             this.rangePictureBox.Name = "rangePictureBox";
             this.rangePictureBox.Size = new System.Drawing.Size(80, 80);
             this.rangePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -196,17 +196,17 @@
             // 
             // psnrValueTextBox
             // 
-            this.psnrValueTextBox.Location = new System.Drawing.Point(1117, 696);
-            this.psnrValueTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.psnrValueTextBox.Location = new System.Drawing.Point(1058, 696);
+            this.psnrValueTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.psnrValueTextBox.Multiline = true;
             this.psnrValueTextBox.Name = "psnrValueTextBox";
-            this.psnrValueTextBox.Size = new System.Drawing.Size(122, 27);
+            this.psnrValueTextBox.Size = new System.Drawing.Size(181, 68);
             this.psnrValueTextBox.TabIndex = 14;
             // 
             // parametersRangeTextBox
             // 
             this.parametersRangeTextBox.Location = new System.Drawing.Point(32, 695);
-            this.parametersRangeTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.parametersRangeTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.parametersRangeTextBox.Multiline = true;
             this.parametersRangeTextBox.Name = "parametersRangeTextBox";
             this.parametersRangeTextBox.Size = new System.Drawing.Size(150, 69);
@@ -233,7 +233,7 @@
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.decodedImgBox);
             this.Controls.Add(this.originalImageBox);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.originalImageBox)).EndInit();

@@ -30,6 +30,7 @@ namespace Fractal_image_coder
         string initialFilePath;
         string encodedFilePath;
         byte[] first1078BytesEncoded;
+        int[,] currentDecoderStep;
 
         public Form1()
         {
@@ -261,10 +262,26 @@ namespace Fractal_image_coder
             }
             else if(numberStepsDecode.Value != 0)
             {
+                Bitmap initialImage = new Bitmap(initialFilePath);
+                int widthInitial = initialImage.Width;
+                int heightInitial = initialImage.Height;
+
                 first1078BytesEncoded = GetFirst1078Bytes(encodedFilePath);
                 Console.WriteLine(first1078BytesEncoded.Length);
-                FractalDecoder decoder = new FractalDecoder(width, height, encodedFilePath, (int)numberStepsDecode.Value);
-                decoder.StartDecoding();  
+                FractalDecoder decoder = new FractalDecoder(initialImage, widthInitial, heightInitial, encodedFilePath, (int)numberStepsDecode.Value);
+                decoder.StartDecoding();
+                currentDecoderStep = decoder.GetCurrentStep();
+                decodedImgBox.Image = CreateBitmapForDecodedMatrix(currentDecoderStep, widthInitial, heightInitial);
+
+                if(originalImageInt != null)
+                {
+                    double psnr = CalculatePSNR(originalImageInt, currentDecoderStep, width, height);
+                    psnrValueTextBox.Text = $"PSNR = {psnr}";
+                }
+                else
+                {
+                    MessageBox.Show("Please load the original image first and process it");
+                }
             }
             else
             {
@@ -272,14 +289,55 @@ namespace Fractal_image_coder
             }
         }
 
+        public Bitmap CreateBitmapForDecodedMatrix(int[,] decodedMatrix, int width, int height)
+        {
+            Bitmap bitmap = new Bitmap(width, height);
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    int val = decodedMatrix[i, j];
+                    Color pixelColor = Color.FromArgb(val, val, val);
+                    bitmap.SetPixel(i, j, pixelColor);
+                }
+            }
+
+            return bitmap;
+        }
+
+        public double CalculatePSNR(int[,] original, int[,] decoded, int width, int height)
+        {
+            double sumSquareOD = 0;
+            int maxOrig = int.MinValue;
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0;i < width; i++)
+                {
+                    double diff = original[i, j] - decoded[i, j];
+                    sumSquareOD = sumSquareOD + diff * diff;
+
+                    if(original[i, j] > maxOrig)
+                    {
+                        maxOrig = original[i, j];
+                    }
+                }
+            }
+
+            double meanOD = sumSquareOD / (width * height);
+            double psnr = 10 * Math.Log10((maxOrig * maxOrig) / meanOD);
+            return psnr;
+        }
+
         private void saveDecodedButton_Click(object sender, EventArgs e)
         {
-            if (encodedFilePath != null && initialFilePath != null)
+            if (currentDecoderStep != null)
             {
                 width = 256; height = 256;
                 string decodedFilePath = Path.GetFullPath(encodedFilePath) + ".bmp";
-                //StoreDecoded storeDecoded = new StoreDecoded(first1078BytesEncoded, decodedFilePath, CreateBitmapForDecodedMatrix(decodedMatrixDecoder, width, height), width, height);
-                //storeDecoded.startStoring();
+                StoreDecoded storeDecoded = new StoreDecoded(first1078BytesEncoded, decodedFilePath, currentDecoderStep, width, height);
+                storeDecoded.StartStoring();
             }
             else
             {
