@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wavelet_decompisition", "Wavelet_decompisition\Wavelet_decompisition.csproj", "{189F1C78-2DBC-42A8-8408-2BB00990B387}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{189F1C78-2DBC-42A8-8408-2BB00990B387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{189F1C78-2DBC-42A8-8408-2BB00990B387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{189F1C78-2DBC-42A8-8408-2BB00990B387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{189F1C78-2DBC-42A8-8408-2BB00990B387}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CAF440CA-6780-462E-838A-DDEF2415763D}
+	EndGlobalSection
+EndGlobal
