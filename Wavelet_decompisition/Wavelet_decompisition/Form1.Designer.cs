@@ -76,6 +76,7 @@
             this.loadOriginalButton.TabIndex = 1;
             this.loadOriginalButton.Text = "Load";
             this.loadOriginalButton.UseVisualStyleBackColor = true;
+            this.loadOriginalButton.Click += new System.EventHandler(this.loadOriginalButton_Click);
             // 
             // minMaxErrorButton
             // 
@@ -110,6 +111,7 @@
             this.saveEncodedButton.TabIndex = 5;
             this.saveEncodedButton.Text = "Save";
             this.saveEncodedButton.UseVisualStyleBackColor = true;
+            this.saveEncodedButton.Click += new System.EventHandler(this.saveEncodedButton_Click);
             // 
             // loadEncodedButton
             // 
@@ -119,6 +121,7 @@
             this.loadEncodedButton.TabIndex = 6;
             this.loadEncodedButton.Text = "Load";
             this.loadEncodedButton.UseVisualStyleBackColor = true;
+            this.loadEncodedButton.Click += new System.EventHandler(this.loadEncodedButton_Click);
             // 
             // refreshWaveletButton
             // 
@@ -128,6 +131,7 @@
             this.refreshWaveletButton.TabIndex = 7;
             this.refreshWaveletButton.Text = "Refresh Wavelet Img";
             this.refreshWaveletButton.UseVisualStyleBackColor = true;
+            this.refreshWaveletButton.Click += new System.EventHandler(this.refreshWaveletButton_Click);
             // 
             // textBox1
             // 
@@ -214,6 +218,7 @@
             this.analysisH1Button.TabIndex = 17;
             this.analysisH1Button.Text = "An H1";
             this.analysisH1Button.UseVisualStyleBackColor = true;
+            this.analysisH1Button.Click += new System.EventHandler(this.analysisH1Button_Click);
             // 
             // analysisV1Button
             // 
@@ -223,6 +228,7 @@
             this.analysisV1Button.TabIndex = 18;
             this.analysisV1Button.Text = "An V1";
             this.analysisV1Button.UseVisualStyleBackColor = true;
+            this.analysisV1Button.Click += new System.EventHandler(this.analysisV1Button_Click);
             // 
             // synthesisH1Button
             // 
@@ -232,6 +238,7 @@
             this.synthesisH1Button.TabIndex = 19;
             this.synthesisH1Button.Text = "Sy H1";
             this.synthesisH1Button.UseVisualStyleBackColor = true;
+            this.synthesisH1Button.Click += new System.EventHandler(this.synthesisH1Button_Click);
             // 
             // synthesisV1Button
             // 
@@ -241,6 +248,7 @@
             this.synthesisV1Button.TabIndex = 20;
             this.synthesisV1Button.Text = "Sy V1";
             this.synthesisV1Button.UseVisualStyleBackColor = true;
+            this.synthesisV1Button.Click += new System.EventHandler(this.synthesisV1Button_Click);
             // 
             // levelValue
             // 
@@ -270,6 +278,7 @@
             this.synthesisButton.TabIndex = 24;
             this.synthesisButton.Text = "Synthesis";
             this.synthesisButton.UseVisualStyleBackColor = true;
+            this.synthesisButton.Click += new System.EventHandler(this.synthesisButton_Click);
             // 
             // analysisButton
             // 
@@ -279,6 +288,7 @@
             this.analysisButton.TabIndex = 23;
             this.analysisButton.Text = "Analysis";
             this.analysisButton.UseVisualStyleBackColor = true;
+            this.analysisButton.Click += new System.EventHandler(this.analysisButton_Click);
             // 
             // Form1
             // 

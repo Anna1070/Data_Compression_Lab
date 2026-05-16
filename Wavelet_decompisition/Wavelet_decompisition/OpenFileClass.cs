@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Windows.Forms;
 
-namespace Near_lossless_predictive_coder
+namespace Wavelet_decompisition
 {
     internal class OpenFileClass
     {
@@ -23,7 +23,7 @@ namespace Near_lossless_predictive_coder
 
         public bool CheckBMPExtension(string filePath)
         {
-            if (Path.GetExtension(filePath) != ".bmp")
+            if (Path.GetExtension(filePath).ToLower() != ".bmp")
             {
                 return false;
             }
