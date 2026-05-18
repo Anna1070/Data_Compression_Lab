@@ -18,13 +18,6 @@ namespace Wavelet_decompisition
         double[] analysisH = {0.000000000000, 0.091271763114, -0.057543526229, -0.591271763114, 1.115087052457, -0.591271763114,
                                 -0.057543526229, 0.091271763114, 0.000000000000};
 
-        double[] synthesisL = {0.000000000000, -0.091271763114, -0.057543526229, 0.591271763114, 1.115087052457, 0.591271763114,
-                                -0.057543526229, -0.091271763114, 0.000000000000};
-
-        double[] synthesisH = {0.026748757411, 0.016864118443, -0.078223266529, -0.266864118443, 0.602949018236, -0.266864118443,
-                                 -0.078223266529, 0.016864118443, 0.026748757411};
-
-
         public WaveletCoder(double[,] originalImageD, int width, int height)
         {
             this.originalImageD = originalImageD;
@@ -185,6 +178,106 @@ namespace Wavelet_decompisition
             }
 
             return rearrangedColumn;
+        }
+
+        public void AnalysisH2()
+        {
+            double[,] temp = new double[width, height];
+            Array.Copy(currentImageD, temp, currentImageD.Length);
+
+            for (int j = 0; j < height/2; j++)
+            {
+                double[] currentLine = new double[width/2];
+                for (int i = 0; i < width/2; i++)
+                {
+                    currentLine[i] = currentImageD[i, j];
+                }
+
+                double[] procesedLine = AnalysisH(currentLine, width/2);
+
+                for (int i = 0; i < width / 2; i++)
+                {
+                    temp[i, j] = procesedLine[i];
+                }
+            }
+
+            currentImageD = temp;
+        }
+
+        public void AnalysisV2()
+        {
+            double[,] temp = new double[width, height];
+            Array.Copy(currentImageD, temp, currentImageD.Length);
+
+            for (int i = 0; i < width /2; i++)
+            {
+                double[] currentColumn = new double[height/2];
+                for (int j = 0; j < height/2; j++)
+                {
+                    currentColumn[j] = currentImageD[i, j];
+                }
+
+                double[] processedColumn = AnalysisV(currentColumn, height/2);
+
+                for (int j = 0; j < height/2; j++)
+                {
+                    temp[i, j] = processedColumn[j];
+                }
+            }
+
+            currentImageD = temp;
+        }
+
+        public void AnalyzeToALevel(int level)
+        {
+            Array.Copy(originalImageD, currentImageD, originalImageD.Length);
+
+            int currentW = width;
+            int currentH = height;
+
+            for (int l=1; l<=level; l++)
+            {
+                double[,] temp = new double[width, height];
+                Array.Copy(currentImageD, temp, currentImageD.Length);
+
+                for (int j = 0; j < currentH; j++)
+                {
+                    double[] currentLine = new double[currentW];
+                    for (int i = 0; i < currentW; i++)
+                    {
+                        currentLine[i] = currentImageD[i, j];
+                    }
+
+                    double[] processedLine = AnalysisH(currentLine, currentW);
+
+                    for (int i = 0; i < currentW; i++)
+                    {
+                        temp[i, j] = processedLine[i];
+                    }
+                }
+
+                Array.Copy(temp, currentImageD, temp.Length);
+
+                for (int i = 0; i < currentW; i++)
+                {
+                    double[] currentColumn = new double[currentH];
+                    for (int j = 0; j < currentH; j++)
+                    {
+                        currentColumn[j] = currentImageD[i, j];
+                    }
+
+                    double[] processedColumn = AnalysisV(currentColumn, currentH);
+
+                    for (int j = 0; j < currentH; j++)
+                    {
+                        temp[i, j] = processedColumn[j];
+                    }
+                }
+
+                Array.Copy(temp, currentImageD, temp.Length);
+                currentW = currentW / 2;
+                currentH = currentH / 2;
+            }
         }
 
         public double[,] GetCurrentImageD()

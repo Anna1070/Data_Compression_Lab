@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Security.Policy;
+using System.Reflection.Emit;
 
 namespace Wavelet_decompisition
 {
@@ -24,6 +26,11 @@ namespace Wavelet_decompisition
         double[,] currentImageD;
         bool doneH1 = false;
         bool doneV1 = false;
+        bool doneH2  = false;
+        bool doneV2 = false;
+        bool levelsAnalysis = false;
+
+        string waveletFilePath;
 
         public Form1()
         {
@@ -79,30 +86,20 @@ namespace Wavelet_decompisition
                     originalImageD[x, y] = (int)originalImage.GetPixel(x, y).R;
                 }
             }
-        }
-
-        private void saveEncodedButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void loadEncodedButton_Click(object sender, EventArgs e)
-        {
-
-        }
+        } 
 
         private void refreshWaveletButton_Click(object sender, EventArgs e)
         {
             if(currentImageD != null)
             {
-                if (doneV1)
+                if (!levelsAnalysis)
                 {
-                    Bitmap waveletImage = CreateBitmapForWaveletHV(currentImageD, width, height, (double)scaleValue.Value);
+                    Bitmap waveletImage = CreateBitmapForWavelet(currentImageD, width, height, (double)scaleValue.Value);
                     waveletPictureBox.Image = waveletImage;
                 }
                 else
                 {
-                    Bitmap waveletImage = CreateBitmapForWaveletH1(currentImageD, width, height, (double)scaleValue.Value);
+                    Bitmap waveletImage = CreateBitmapForWaveletLevels(currentImageD, width, height, (double)scaleValue.Value, (int)levelValue.Value);
                     waveletPictureBox.Image = waveletImage;
                 }
             }
@@ -116,17 +113,20 @@ namespace Wavelet_decompisition
         {
             if (waveletCoder != null)
             {
-                if (!doneH1)
+                if (!doneH1 && !levelsAnalysis)
                 {
                     waveletCoder.AnalysisH1();
                     currentImageD = waveletCoder.GetCurrentImageD();
-                    Bitmap waveletImage = CreateBitmapForWaveletH1(currentImageD, width, height, (double)scaleValue.Value);
-                    waveletPictureBox.Image = waveletImage;
                     doneH1 = true;
+                    xValue.Value = width / 2;
+                    yValue.Value = height;
+
+                    Bitmap waveletImage = CreateBitmapForWavelet(currentImageD, width, height, (double)scaleValue.Value);
+                    waveletPictureBox.Image = waveletImage;
                 }
                 else
                 {
-                    MessageBox.Show("You already did the horizontal analysis");
+                    MessageBox.Show("You already did the H1 analysis");
                 }
             }
             else
@@ -139,22 +139,105 @@ namespace Wavelet_decompisition
         {
             if (currentImageD != null)
             {
-                if (!doneV1)
+                if (!doneV1 && !levelsAnalysis)
                 {
                     waveletCoder.AnalysisV1();
                     currentImageD = waveletCoder.GetCurrentImageD();
-                    Bitmap waveletImage = CreateBitmapForWaveletHV(currentImageD, width, height, (double)scaleValue.Value);
-                    waveletPictureBox.Image = waveletImage;
                     doneV1 = true;
+                    xValue.Value = width / 2;
+                    yValue.Value = height / 2;
+
+                    Bitmap waveletImage = CreateBitmapForWavelet(currentImageD, width, height, (double)scaleValue.Value);
+                    waveletPictureBox.Image = waveletImage;
                 }
                 else
                 {
-                    MessageBox.Show("You already did the vertical analysis");
+                    MessageBox.Show("You already did the V1 analysis");
                 }
             }
             else
             {
-                MessageBox.Show("Please use the horizontal analysis first");
+                MessageBox.Show("Please use the H1 analysis first");
+            }
+        }
+
+        private void analysisH2Button_Click(object sender, EventArgs e)
+        {
+            if (currentImageD != null)
+            {
+                if (!doneH2 && !levelsAnalysis)
+                {
+                    waveletCoder.AnalysisH2();
+                    currentImageD = waveletCoder.GetCurrentImageD();
+                    doneH2 = true;
+                    xValue.Value = width / 4;
+                    yValue.Value = height / 2;
+
+                    Bitmap waveletImage = CreateBitmapForWavelet(currentImageD, width, height, (double)scaleValue.Value);
+                    waveletPictureBox.Image = waveletImage;
+                }
+                else
+                {
+                    MessageBox.Show("You already did the H2 analysis");
+                }
+                
+            }
+            else
+            {
+                MessageBox.Show("Please execute the H1 and V1 analysis first");
+            }
+        }
+
+        private void analysisV2Button_Click(object sender, EventArgs e)
+        {
+            if (currentImageD != null && doneH2)
+            {
+                if (!doneV2 && !levelsAnalysis)
+                {
+                    waveletCoder.AnalysisV2();
+                    currentImageD = waveletCoder.GetCurrentImageD();
+                    doneV2 = true;
+                    xValue.Value = width / 4;
+                    yValue.Value = height / 4;
+
+                    Bitmap waveletImage = CreateBitmapForWavelet(currentImageD, width, height, (double)scaleValue.Value);
+                    waveletPictureBox.Image = waveletImage;
+                }
+                else
+                {
+                    MessageBox.Show("You already did the V2 analysis");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please use the H2 analysis first");
+            }
+        }
+
+        private void analysisButton_Click(object sender, EventArgs e)
+        {
+            if(originalImageD != null)
+            {
+                if(levelValue.Value != 0)
+                {
+                    waveletCoder = new WaveletCoder(originalImageD, width, height);
+                    waveletCoder.AnalyzeToALevel((int)levelValue.Value);
+                    levelsAnalysis = true;
+                    xValue.Value = width / (int)Math.Pow(2, (int)levelValue.Value);
+                    yValue.Value = height / (int)Math.Pow(2, (int)levelValue.Value);
+
+                    currentImageD = waveletCoder.GetCurrentImageD();
+                    Bitmap waveletImage = CreateBitmapForWaveletLevels(currentImageD, width, height, (double)scaleValue.Value, (int)levelValue.Value);
+                    waveletPictureBox.Image = waveletImage;
+                }
+                else
+                {
+                    MessageBox.Show("Please choose a level between 0 and 5");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please load an image first");
             }
         }
 
@@ -168,7 +251,12 @@ namespace Wavelet_decompisition
 
         }
 
-        private void analysisButton_Click(object sender, EventArgs e)
+        private void synthesisH2Button_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void synthesisV2Button_Click(object sender, EventArgs e)
         {
 
         }
@@ -178,30 +266,123 @@ namespace Wavelet_decompisition
 
         }
 
-        public Bitmap CreateBitmapForWaveletH1(double[,] currentImage, int width, int height, double scaleV)
+        private void saveEncodedButton_Click(object sender, EventArgs e)
+        {
+            if (originalFilePath != null)
+            {
+                if (currentImageD == null)
+                {
+                    MessageBox.Show("Please analyze an image first");
+                }
+                else
+                {
+                    string encodedFilePath = Path.GetFullPath(originalFilePath).ToLower() + ".wvt";
+                    StoreWavelet storeWavelet = new StoreWavelet(currentImageD, encodedFilePath, width, height, (int)levelValue.Value);
+                    storeWavelet.StartStoring();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please load an original image first");
+            }
+        }
+
+        private void loadEncodedButton_Click(object sender, EventArgs e)
+        {
+            file.OpenFile();
+            waveletFilePath = file.getFilePath();
+            if (waveletFilePath != null)
+            {
+                if (file.CheckEncodedExtension(waveletFilePath))
+                {
+                    LoadWavelet loadWavelet = new LoadWavelet(waveletFilePath);
+                    loadWavelet.StartReading();
+                    currentImageD = loadWavelet.GetReadWavelet();
+                    width = loadWavelet.GetWidth();
+                    height = loadWavelet.GetHeight();
+                    int level = loadWavelet.GetLevel();
+                    levelValue.Value = level;
+                    xValue.Value = width / (int)Math.Pow(2, level);
+                    yValue.Value = height / (int)Math.Pow(2, level);
+                    levelsAnalysis = true;
+
+                    waveletCoder = new WaveletCoder(currentImageD, width, height);
+                    waveletPictureBox.Image = CreateBitmapForWaveletLevels(currentImageD, width, height, (double)scaleValue.Value, level);
+                }
+                else
+                {
+                    waveletFilePath = null;
+                    MessageBox.Show("Please choose a file with the .wvl extension");
+                }
+            }
+        }
+
+        public Bitmap CreateBitmapForWavelet(double[,] currentImage, int width, int height, double scaleV)
         {
             Bitmap bitmap = new Bitmap(width, height);
 
             double scale = scaleV;
             double offset = 128.0;
 
+            int halfW = width / 2;
+            int halfH = height / 2;
+
+            int quarterW = width / 4;
+            int quarterH = height / 4;
+
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0; i < width; i++)
                 {
                     double value = currentImage[i, j];
-                    int valuePixel;
+                    int valuePixel = 0;
 
-                    if (i < width / 2)
+                    if ( doneH1 && !doneV1)
                     {
-                        valuePixel = (int)Math.Round(value);
+                        if (i < halfW)
+                        {
+                            valuePixel = (int)Math.Round(value);
+                        }
+                        else
+                        {
+                            valuePixel = (int)(Math.Round(value) * scale + offset);
+                        }
                     }
-                    else
+                    else if (doneH2 && !doneV2)
                     {
-                        valuePixel = (int)(Math.Round(value) * scale + offset);
+                        if (i < quarterW && j < halfH)
+                        {
+                            valuePixel = (int)Math.Round(value);
+                        }
+                        else
+                        {
+                            valuePixel = (int)Math.Round((value * scale) + offset);
+                        }
+                    }
+                    else if (doneH2 && doneV2)
+                    {
+                        if (i < quarterW && j < quarterH)
+                        {
+                            valuePixel = (int)Math.Round(value);
+                        }
+                        else
+                        {
+                            valuePixel = (int)Math.Round((value * scale) + offset);
+                        }
+                    }
+                    else if (doneH1 && doneV1)
+                    {
+                        if (i < halfW && j < halfH)
+                        {
+                            valuePixel = (int)Math.Round(value);
+                        }
+                        else
+                        {
+                            valuePixel = (int)Math.Round((value * scale) + offset);
+                        }
                     }
 
-                    if (valuePixel > 255) 
+                    if (valuePixel > 255)
                         valuePixel = 255;
                     if (valuePixel < 0) 
                         valuePixel = 0;
@@ -214,27 +395,28 @@ namespace Wavelet_decompisition
             return bitmap;
         }
 
-        public Bitmap CreateBitmapForWaveletHV(double[,] currentImage, int width, int height, double scaleV)
+        public Bitmap CreateBitmapForWaveletLevels(double[,] currentImage, int width, int height, double scale, int level)
         {
             Bitmap bitmap = new Bitmap(width, height);
-
-            double scale = scaleV;
             double offset = 128.0;
 
-            for (int j = 0; j < height; j++)
+            int finalW = width / (int)Math.Pow(2, level);
+            int finalH = height / (int)Math.Pow(2, level);
+
+            for (int j=0; j<height; j++)
             {
-                for (int i = 0; i < width; i++)
+                for (int i=0; i<width; i++)
                 {
                     double value = currentImage[i, j];
-                    int valuePixel;
+                    int valuePixel = 0;
 
-                    if (i < width / 2 && j < height / 2)
+                    if (i < finalW && j < finalH)
                     {
                         valuePixel = (int)Math.Round(value);
                     }
                     else
                     {
-                        valuePixel = (int)(Math.Round(value) * scale + offset);
+                        valuePixel = (int)Math.Round((value * scale) + offset);
                     }
 
                     if (valuePixel > 255)

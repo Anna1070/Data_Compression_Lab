@@ -52,6 +52,10 @@
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.synthesisButton = new System.Windows.Forms.Button();
             this.analysisButton = new System.Windows.Forms.Button();
+            this.analysisH2Button = new System.Windows.Forms.Button();
+            this.analysisV2Button = new System.Windows.Forms.Button();
+            this.synthesisV2Button = new System.Windows.Forms.Button();
+            this.synthesisH2Button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.originalImageBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.waveletPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.scaleValue)).BeginInit();
@@ -166,7 +170,7 @@
             // 
             this.xValue.Location = new System.Drawing.Point(967, 598);
             this.xValue.Maximum = new decimal(new int[] {
-            256,
+            512,
             0,
             0,
             0});
@@ -186,7 +190,7 @@
             // 
             this.yValue.Location = new System.Drawing.Point(967, 625);
             this.yValue.Maximum = new decimal(new int[] {
-            256,
+            512,
             0,
             0,
             0});
@@ -252,7 +256,7 @@
             // 
             // levelValue
             // 
-            this.levelValue.Location = new System.Drawing.Point(1184, 228);
+            this.levelValue.Location = new System.Drawing.Point(1184, 287);
             this.levelValue.Maximum = new decimal(new int[] {
             5,
             0,
@@ -264,7 +268,7 @@
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(1101, 228);
+            this.textBox6.Location = new System.Drawing.Point(1101, 287);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(67, 20);
             this.textBox6.TabIndex = 21;
@@ -272,7 +276,7 @@
             // 
             // synthesisButton
             // 
-            this.synthesisButton.Location = new System.Drawing.Point(1101, 303);
+            this.synthesisButton.Location = new System.Drawing.Point(1101, 362);
             this.synthesisButton.Name = "synthesisButton";
             this.synthesisButton.Size = new System.Drawing.Size(113, 34);
             this.synthesisButton.TabIndex = 24;
@@ -282,7 +286,7 @@
             // 
             // analysisButton
             // 
-            this.analysisButton.Location = new System.Drawing.Point(1101, 263);
+            this.analysisButton.Location = new System.Drawing.Point(1101, 322);
             this.analysisButton.Name = "analysisButton";
             this.analysisButton.Size = new System.Drawing.Size(113, 34);
             this.analysisButton.TabIndex = 23;
@@ -290,11 +294,55 @@
             this.analysisButton.UseVisualStyleBackColor = true;
             this.analysisButton.Click += new System.EventHandler(this.analysisButton_Click);
             // 
+            // analysisH2Button
+            // 
+            this.analysisH2Button.Location = new System.Drawing.Point(1101, 92);
+            this.analysisH2Button.Name = "analysisH2Button";
+            this.analysisH2Button.Size = new System.Drawing.Size(113, 34);
+            this.analysisH2Button.TabIndex = 25;
+            this.analysisH2Button.Text = "An H2";
+            this.analysisH2Button.UseVisualStyleBackColor = true;
+            this.analysisH2Button.Click += new System.EventHandler(this.analysisH2Button_Click);
+            // 
+            // analysisV2Button
+            // 
+            this.analysisV2Button.Location = new System.Drawing.Point(1101, 132);
+            this.analysisV2Button.Name = "analysisV2Button";
+            this.analysisV2Button.Size = new System.Drawing.Size(113, 34);
+            this.analysisV2Button.TabIndex = 26;
+            this.analysisV2Button.Text = "An V2";
+            this.analysisV2Button.UseVisualStyleBackColor = true;
+            this.analysisV2Button.Click += new System.EventHandler(this.analysisV2Button_Click);
+            // 
+            // synthesisV2Button
+            // 
+            this.synthesisV2Button.Location = new System.Drawing.Point(1239, 132);
+            this.synthesisV2Button.Name = "synthesisV2Button";
+            this.synthesisV2Button.Size = new System.Drawing.Size(113, 34);
+            this.synthesisV2Button.TabIndex = 28;
+            this.synthesisV2Button.Text = "Sy V2";
+            this.synthesisV2Button.UseVisualStyleBackColor = true;
+            this.synthesisV2Button.Click += new System.EventHandler(this.synthesisV2Button_Click);
+            // 
+            // synthesisH2Button
+            // 
+            this.synthesisH2Button.Location = new System.Drawing.Point(1238, 92);
+            this.synthesisH2Button.Name = "synthesisH2Button";
+            this.synthesisH2Button.Size = new System.Drawing.Size(113, 34);
+            this.synthesisH2Button.TabIndex = 27;
+            this.synthesisH2Button.Text = "Sy H2";
+            this.synthesisH2Button.UseVisualStyleBackColor = true;
+            this.synthesisH2Button.Click += new System.EventHandler(this.synthesisH2Button_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1363, 731);
+            this.Controls.Add(this.synthesisV2Button);
+            this.Controls.Add(this.synthesisH2Button);
+            this.Controls.Add(this.analysisV2Button);
+            this.Controls.Add(this.analysisH2Button);
             this.Controls.Add(this.synthesisButton);
             this.Controls.Add(this.analysisButton);
             this.Controls.Add(this.levelValue);
@@ -358,6 +406,10 @@
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Button synthesisButton;
         private System.Windows.Forms.Button analysisButton;
+        private System.Windows.Forms.Button analysisH2Button;
+        private System.Windows.Forms.Button analysisV2Button;
+        private System.Windows.Forms.Button synthesisV2Button;
+        private System.Windows.Forms.Button synthesisH2Button;
     }
 }
 
