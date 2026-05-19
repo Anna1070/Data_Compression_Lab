@@ -90,6 +90,7 @@
             this.minMaxErrorButton.TabIndex = 2;
             this.minMaxErrorButton.Text = "Min Max Error";
             this.minMaxErrorButton.UseVisualStyleBackColor = true;
+            this.minMaxErrorButton.Click += new System.EventHandler(this.minMaxErrorButton_Click);
             // 
             // minMaxErrorTextBox
             // 

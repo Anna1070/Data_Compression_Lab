@@ -131,9 +131,9 @@ namespace Wavelet_decompisition
         {
             double[] extendedColumn = new double[height + 8];
 
-            for (int i = 0; i < height; i++)
+            for (int j = 0; j < height; j++)
             {
-                extendedColumn[i + 4] = column[i];
+                extendedColumn[j + 4] = column[j];
             }
 
             extendedColumn[3] = column[1];
