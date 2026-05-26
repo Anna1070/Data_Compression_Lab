@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Fractal_image_coder
 {
@@ -42,6 +43,7 @@ namespace Fractal_image_coder
                 }
             }
 
+            MessageBox.Show("Storing was successful");
             bitWriter.Close();
         }
     }

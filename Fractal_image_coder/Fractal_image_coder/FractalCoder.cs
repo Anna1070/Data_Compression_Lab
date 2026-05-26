@@ -17,6 +17,12 @@ namespace Fractal_image_coder
         List<RangeBlock> rangeBlocks = new List<RangeBlock>();
         List<RangeParameters> rangeParameters = new List<RangeParameters>();
 
+        int n = 64;
+        int s_bits = 5;
+        int o_bits = 7;
+        double GREY_LEVELS = 255.0;
+        double max_scale = 1.2;
+
         public FractalCoder(Bitmap origImg, int width, int height)
         {
             this.origImg = origImg;
@@ -104,13 +110,12 @@ namespace Fractal_image_coder
 
         private void SearchPhase(IProgress<int> progress)
         {
-            int n = 64;
             int totalRanges = rangeBlocks.Count;
             int currentRange = 0;
 
             foreach (var R in rangeBlocks)
             {
-                double minErr = int.MaxValue;
+                double minErr = double.MaxValue;
                 RangeParameters bestPar = null;
 
                 foreach (var D in domainBlocks)
@@ -126,17 +131,40 @@ namespace Fractal_image_coder
                             }
                         }
 
-                        double s = 0, o = 0;
-                        s = (n * sumRD - R.sumR * D.sumD) / (n * D.sumD2 - D.sumD * D.sumD);
-                        o = (1.0 / n) * (R.sumR - s * D.sumD);
+                        double det = n * D.sumD2 - D.sumD * D.sumD;
 
-                        int sQ = (int)Math.Round(((s - (-1.2)) / 2.4) * 31);
-                        int oQ = (int)Math.Round((o / 255) * 127);
+                        double s = 0.0;
+                        if (det != 0.0)
+                        {
+                            s = (n * sumRD - R.sumR * D.sumD) / det;
+                        }
 
-                        sQ = Math.Max(0, Math.Min(31, sQ));
-                        oQ = Math.Max(0, Math.Min(127, oQ));
+                        int sQ = (int)(0.5 + (s + max_scale) / (2.0 * max_scale) * (1 << s_bits));
+                        if (sQ < 0) sQ = 0;
+                        if (sQ >= (1 << s_bits)) sQ = (1 << s_bits) - 1;
 
-                        double err = 1.0 / n * (R.sumR2 + s * (s * D.sumD2 - 2 * sumRD + o * 2 * D.sumD) + o * (o * n - 2 * R.sumR));
+                        s = (double)sQ / (double)(1 << s_bits) * (2.0 * max_scale) - max_scale;
+
+                        double o = (R.sumR - s * D.sumD) / n;
+
+                        if (s > 0.0)
+                        {
+                            o += s * GREY_LEVELS;
+                        }
+
+                        int oQ = (int)(0.5 + o / ((1.0 + Math.Abs(s)) * GREY_LEVELS) * ((1 << o_bits) - 1));
+                        if (oQ < 0) oQ = 0;
+                        if (oQ >= (1 << o_bits)) oQ = (1 << o_bits) - 1;
+
+                        o = (double)oQ / (double)((1 << o_bits) - 1) * ((1.0 + Math.Abs(s)) * GREY_LEVELS);
+                        if (s > 0.0)
+                        {
+                            o -= s * GREY_LEVELS;
+                        }
+
+                        double err = (R.sumR2 + s * (s * D.sumD2 - 2.0 * sumRD + 2.0 * o * D.sumD) +
+                                      o * (o * n - 2.0 * R.sumR));
+
                         if (err < minErr)
                         {
                             minErr = err;

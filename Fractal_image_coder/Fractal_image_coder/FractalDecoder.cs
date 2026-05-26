@@ -104,8 +104,17 @@ namespace Fractal_image_coder
                         }
                     }
 
-                    double s = (range.sQ / 31.0) * 2.4 - 1.2;
-                    double o = (range.oQ / 127.0) * 255.0;
+                    int s_bits = 5;
+                    int o_bits = 7;
+                    double GREY_LEVELS = 255.0;
+                    double max_scale = 1.2;
+
+                    double s = (double)range.sQ / (double)(1 << s_bits) * (2.0 * max_scale) - max_scale;
+                    double o = (double)range.oQ / (double)((1 << o_bits) - 1) * ((1.0 + Math.Abs(s)) * GREY_LEVELS);
+                    if (s > 0.0)
+                    {
+                        o -= s * GREY_LEVELS;
+                    }
 
                     for (int j=0; j < 8; j++)
                     {

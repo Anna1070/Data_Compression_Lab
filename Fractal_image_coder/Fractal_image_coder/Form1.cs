@@ -128,7 +128,7 @@ namespace Fractal_image_coder
 
                 foreach (var range in rangeParameters)
                 {
-                    if (range.rx ==  rangeX && range.ry == rangeY)
+                    if (range.rx == rangeX && range.ry == rangeY)
                     {
                         rP = range;
                         break;
