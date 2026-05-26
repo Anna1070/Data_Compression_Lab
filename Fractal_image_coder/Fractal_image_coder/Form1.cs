@@ -31,6 +31,7 @@ namespace Fractal_image_coder
         string encodedFilePath;
         byte[] first1078BytesEncoded;
         int[,] currentDecoderStep;
+        int[,] originalInt;
 
         public Form1()
         {
@@ -273,14 +274,14 @@ namespace Fractal_image_coder
                 currentDecoderStep = decoder.GetCurrentStep();
                 decodedImgBox.Image = CreateBitmapForDecodedMatrix(currentDecoderStep, widthInitial, heightInitial);
 
-                if(originalImageInt != null)
+                if (originalFilePath != null)
                 {
-                    double psnr = CalculatePSNR(originalImageInt, currentDecoderStep, width, height);
+                    double psnr = CalculatePSNR(currentDecoderStep, widthInitial, heightInitial);
                     psnrValueTextBox.Text = $"PSNR = {psnr}";
                 }
                 else
                 {
-                    MessageBox.Show("Please load the original image first and process it");
+                    MessageBox.Show("Please load an original image first");
                 }
             }
             else
@@ -306,21 +307,30 @@ namespace Fractal_image_coder
             return bitmap;
         }
 
-        public double CalculatePSNR(int[,] original, int[,] decoded, int width, int height)
+        public double CalculatePSNR(int[,] decoded, int width, int height)
         {
             double sumSquareOD = 0;
             int maxOrig = int.MinValue;
+            Bitmap originalImg = new Bitmap(originalFilePath);
+            int[,] originalInt = new int[width, height];
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    originalInt[x, y] = (int)originalImg.GetPixel(x, y).R;
+                }
+            }
 
             for (int j = 0; j < height; j++)
             {
                 for (int i = 0;i < width; i++)
                 {
-                    double diff = original[i, j] - decoded[i, j];
+                    double diff = originalInt[i, j] - decoded[i, j];
                     sumSquareOD = sumSquareOD + diff * diff;
 
-                    if(original[i, j] > maxOrig)
+                    if(originalInt[i, j] > maxOrig)
                     {
-                        maxOrig = original[i, j];
+                        maxOrig = originalInt[i, j];
                     }
                 }
             }
