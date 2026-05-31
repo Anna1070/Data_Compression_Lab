@@ -35,7 +35,7 @@ namespace Arithmetic_coder
 
         public bool CheckEncodedExtension(string filePath)
         {
-            if (Path.GetExtension(filePath) != ".fc")
+            if (Path.GetExtension(filePath) != ".ac")
             {
                 return false;
             }

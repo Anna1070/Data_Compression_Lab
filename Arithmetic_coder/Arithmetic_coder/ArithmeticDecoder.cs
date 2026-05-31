@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Arithmetic_coder
 {
-    internal class ArithmeticCoder
+    class ArithmeticDecoder
     {
         public uint low;
         public uint high;
+        public uint value;
         public UInt64 range;
-        public int underflow_counter;
 
         public uint firstShiftMask = 0x80000000;
         public uint secondShiftMask = 0x40000000;
@@ -29,11 +29,10 @@ namespace Arithmetic_coder
         public int[] sums = new int[countSize];
         public int totalS;
 
-        public  void InitializeDynamicModel()
+        public void InitializeDynamicModel()
         {
             low = 0x00000000;
             high = 0xFFFFFFFF;
-            underflow_counter = 0;
 
             //counts = new Dictionary<char, int>();
             //sums = new Dictionary<char, int>();
@@ -46,6 +45,7 @@ namespace Arithmetic_coder
             {
                 counts[i] = 1;
             }
+
             RecalculateSums();
         }
 
@@ -66,98 +66,103 @@ namespace Arithmetic_coder
             totalS = currentSum;
         }
 
-        public void EncodeSymbol(int symbol, BitWriter bitWriter)
+        public void InitializeDecoder(BitReader bitReader)
+        {
+            InitializeDynamicModel();
+
+            value = 0;
+            for (int i = 0; i < 32; i++)
+            {
+                uint bit = ReadBitWithZeroPadding(bitReader);
+                value = (value << 1) | bit;
+            }
+        }
+
+        public int DecodeSymbol(BitReader bitReader)
         {
             range = (UInt64)(high - low) + 1;
-            high = low + (uint)((range * (UInt64)(sums[symbol] + counts[symbol])) / (UInt64)totalS) - 1;
-            low = low + (uint)((range * (UInt64)sums[symbol]) / (UInt64)totalS);
 
-            counts[symbol]++;
+            UInt64 sumc = (((UInt64)(value - low) + 1) * (UInt64)totalS - 1) / range;
+
+            //char decodedSymbol = ' ';
+            int decodedSymbol = -1;
+
+            //if (sumc >= (UInt64)sums['A'] && sumc < (UInt64)sums['B'])
+            //{
+            //    decodedSymbol = 'A';
+            //}
+            //else if (sumc >= (UInt64)sums['B'] && sumc < (UInt64)sums[EOF])
+            //{
+            //    decodedSymbol = 'B';
+            //}
+            //else
+            //{
+            //    decodedSymbol = EOF;
+            //}
+
+            for (int i = 0; i < countSize; i++)
+            {
+                int nextSum;
+
+                if (i == eofIndex)
+                {
+                    nextSum = totalS;
+                }
+                else
+                {
+                    nextSum = sums[i + 1];
+                }
+
+                if (sumc >= (UInt64)sums[i] && sumc < (UInt64)nextSum)
+                {
+                    decodedSymbol = i;
+                    break;
+                }
+            }
+
+            high = low + (uint)((range * (UInt64)(sums[decodedSymbol] + counts[decodedSymbol])) / (UInt64)totalS) - 1;
+            low = low + (uint)((range * (UInt64)sums[decodedSymbol]) / (UInt64)totalS);
+
+            counts[decodedSymbol]++;
             RecalculateSums();
 
             while (true)
-            {  
+            {
                 if ((low & firstShiftMask) == (high & firstShiftMask))
                 {
-                    Console.WriteLine($"Low first bit: {low >> 31}   High first bit: {high >> 31}");
-                    int bit = (int)((low & firstShiftMask) >> 31);
-
-                    bitWriter.WriteNBits((uint)bit, 1);
-
-                    while (underflow_counter > 0)
-                    {
-                        int oppositeBit;
-                        if (bit == 1)
-                        {
-                            oppositeBit = 0;
-                        }
-                        else
-                        {
-                            oppositeBit = 1;
-                        }
-                        bitWriter.WriteNBits((uint)oppositeBit, 1);
-                        underflow_counter--;
-                    }
-
                     low = low << 1;
                     high = (high << 1) | 1;
-                }
 
+                    uint nextBit = ReadBitWithZeroPadding(bitReader);
+                    value = (value << 1) | nextBit;
+                }
                 else if ((low & secondShiftMask) != 0 && (high & secondShiftMask) == 0)
                 {
-                    underflow_counter++;
-
                     low = (low << 1) ^ firstShiftMask;
                     high = ((high ^ firstShiftMask) << 1) | firstShiftMask | 1;
+
+                    uint nextBit = ReadBitWithZeroPadding(bitReader);
+                    value = ((value - secondShiftMask) << 1) | nextBit;
                 }
                 else
                 {
                     break;
                 }
             }
+
+            return decodedSymbol;
         }
 
-        public void DoneEncoding(BitWriter bitWriter)
+        private uint ReadBitWithZeroPadding(BitReader bitReader)
         {
-            uint sfertLow = low >> 30;
-
-            int firstBit;
-            int secondBit;
-
-            if (sfertLow == 0)
+            try
             {
-                firstBit = 0;
-                secondBit = 1;
+                return bitReader.ReadNBits(1);
             }
-            else if (sfertLow == 1)
+            catch (Exception)
             {
-                firstBit = 1;
-                secondBit = 0;
+                return 0;
             }
-            else
-            {
-                firstBit = 1;
-                secondBit = 0;
-            }
-
-            bitWriter.WriteNBits((uint)firstBit, 1);
-
-            while (underflow_counter > 0)
-            {
-                int oppositeBit;
-                if (firstBit == 1)
-                {
-                    oppositeBit = 0;
-                }
-                else
-                {
-                    oppositeBit = 1;
-                }
-                bitWriter.WriteNBits((uint)oppositeBit, 1);
-                underflow_counter--;
-            }
-
-            bitWriter.WriteNBits((uint)secondBit, 1);
         }
     }
 }
