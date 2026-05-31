@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Laborator1_citire_scriere_biti
+namespace Near_lossless_predictive_coder
 {
     internal class BitReader
     {

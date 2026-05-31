@@ -1,9 +1,9 @@
-﻿using Laborator1_citire_scriere_biti;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Near_lossless_predictive_coder
 {
@@ -66,6 +66,7 @@ namespace Near_lossless_predictive_coder
             }
 
             bitWriter.Close();
+            MessageBox.Show("Finished storing");
         }
 
         public void StartStoringTable()
@@ -112,6 +113,39 @@ namespace Near_lossless_predictive_coder
             }
 
             bitWriter.Close();
+            MessageBox.Show("Finished storing");
+        }
+
+        public void StartStoringArithmetic()
+        {
+            BitWriter bitWriter = new BitWriter(encodedFilePath);
+
+            StoreHeaderPredictorK(bitWriter);
+
+            Console.WriteLine("/////////////////////// Save Mode ////////////////////////////////////////");
+            bitWriter.WriteNBits((uint)2, 2);
+
+            Console.WriteLine("/////////////////////// Quantized Matrix ////////////////////////////////////////");
+            ArithmeticCoder coder = new ArithmeticCoder();
+            coder.InitializeDynamicModel();
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    int val = quantizedErrorMatrix[i, j];
+
+                    int symbol = val + 255;
+
+                    coder.EncodeSymbol(symbol, bitWriter);
+                }
+            }
+
+            coder.EncodeSymbol(ArithmeticCoder.eofIndex, bitWriter);
+            coder.DoneEncoding(bitWriter);
+
+            bitWriter.Close();
+            MessageBox.Show("Finished storing");
         }
     } 
 }

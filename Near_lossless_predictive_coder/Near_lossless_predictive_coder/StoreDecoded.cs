@@ -1,10 +1,10 @@
-﻿using Laborator1_citire_scriere_biti;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Near_lossless_predictive_coder
 {
@@ -43,6 +43,7 @@ namespace Near_lossless_predictive_coder
             }
 
             bitWriter.Close();
+            MessageBox.Show("Finished storing");
         }
     }
 }

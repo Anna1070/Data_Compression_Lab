@@ -1,5 +1,4 @@
-﻿using Laborator1_citire_scriere_biti;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -69,7 +68,7 @@ namespace Near_lossless_predictive_coder
             else if(saveMode == 2)
             {
                 Console.WriteLine("Arithmetic Save Mode");
-                DecodeArithmeticMode();
+                DecodeArithmeticMode(bitReader);
             }
 
             bitReader.Close();
@@ -343,9 +342,28 @@ namespace Near_lossless_predictive_coder
             ReconstructImage();
         }
 
-        private void DecodeArithmeticMode()
+        private void DecodeArithmeticMode(BitReader bitReader)
         {
+            ArithmeticDecoder decoder = new ArithmeticDecoder();
+            decoder.InitializeDecoder(bitReader);
 
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                {
+                    int symbol = decoder.DecodeSymbol(bitReader);
+
+                    if (symbol == ArithmeticDecoder.eofIndex)
+                    {
+                        break;
+                    }
+
+                    int originalValue = symbol - 255;
+                    errorPQMatrix[i, j] = originalValue;
+                }
+            }
+
+            ReconstructImage();
         }
 
         public byte[,] GetDecodedImageDecoder()
