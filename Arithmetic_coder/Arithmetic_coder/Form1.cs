@@ -67,7 +67,6 @@ namespace Arithmetic_coder
                     }
                 }
 
-                // Trimitem noul marker EOF (256) și închidem fișierul
                 coder.EncodeSymbol(ArithmeticCoder.eofIndex, bitWriter);
                 coder.DoneEncoding(bitWriter);
                 bitWriter.Close();
